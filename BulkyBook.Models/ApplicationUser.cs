@@ -12,13 +12,13 @@ namespace BulkyBook.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public string StreetAddress { get; set; }
+        public string Address { get; set; }
         [Required]
         public string City { get; set; }
         [Required]
         public string State { get; set; }
         [Required]
-        public int PoatalCode { get; set; }
+        public int PostalCode { get; set; }
 
         public int? CompanyId { get; set; } // (?) <- this symbol represent item can be a nullable field
         [ForeignKey("CompanyId")]
