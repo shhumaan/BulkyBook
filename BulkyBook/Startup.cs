@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace BulkyBook
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOption>(Configuration); //it will try to match what is in email option in the app setting 
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders() 
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -47,6 +49,12 @@ namespace BulkyBook
                 options.LoginPath = $"/Identity/Account/Login";
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(45);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
         }
 
@@ -66,9 +74,9 @@ namespace BulkyBook
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
-
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
             app.UseAuthentication();
             app.UseAuthorization();
 

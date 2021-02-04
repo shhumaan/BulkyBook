@@ -107,6 +107,14 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                     Value = i
                 }),
             };
+            if (User.IsInRole(SD.Role_Employee))
+            {
+                Input.RoleList = _roleManager.Roles.Where(u => u.Name == SD.Role_User_Comp).Select(x => x.Name).Select(i => new SelectListItem
+                {
+                    Text = i,
+                    Value = i
+                });
+            }
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -200,7 +208,19 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            Input = new InputModel()
+            {
+                CompanyList = _unitOfWork.Company.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                }),
+                RoleList = _roleManager.Roles.Where(u => u.Name != SD.Role_User_Indi).Select(x => x.Name).Select(i => new SelectListItem
+                {
+                    Text = i,
+                    Value = i
+                }),
+            };
             // If we got this far, something failed, redisplay form
             return Page();
         }
