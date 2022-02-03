@@ -10,6 +10,7 @@ namespace BulkyBook.Models
     public class ApplicationUser : IdentityUser
     {
         [Required]
+        [StringLength(20, MinimumLength = 5)]
         public string Name { get; set; }
         [Required]
         public string Address { get; set; }
